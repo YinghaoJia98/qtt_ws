@@ -2,6 +2,7 @@
 #define __JOINT_H__
 
 #include <iostream>
+#include <string.h>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ std::string head = "aplay -D plughw:CARD=Device,DEV=0 ";
 
 std::string audio_path = "";
 
-//字符串与字符数组拼接
+// 字符串与字符数组拼接
 char *join(std::string b, char *s2)
 {
 	char s1[600] = "";
