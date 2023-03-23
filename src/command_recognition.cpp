@@ -12,6 +12,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pipeline/deep_srv.h>
 
 using namespace std;
 ros::Publisher vel_pub; // 创建底盘运动话题发布者
@@ -76,6 +77,12 @@ void voice_words_callback(const std_msgs::String &msg)
 	string str20 = "打开自主建图";
 	string str21 = "关闭自主建图";
 	string str22 = "开始导航";
+	string str23 = "机器人站立";
+	string str24 = "机器人卧下";
+	string str25 = "力矩模式";
+	string str26 = "开始运动";
+	string str27 = "导航模式";
+	string str28 = "手动模式";
 
 	/***********************************
 	指令：机器人前进
@@ -390,6 +397,150 @@ void voice_words_callback(const std_msgs::String &msg)
 		system(WHOLE);
 		cout << "好的：机器人开始导航" << endl;
 	}
+
+	/***********************************
+	指令：机器人站立
+	动作：机器人站立
+	***********************************/
+	else if (str1 == str23)
+	{
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 1;
+		basic_deep_srv_.request.b = 1;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		// OTHER = (char *)"/feedback_voice/search_voice.wav";
+		// WHOLE = join((head + audio_path), OTHER);
+		// system(WHOLE);
+		cout << "好的：机器人站立" << endl;
+	}
+
+	/***********************************
+	指令：机器人卧下
+	动作：机器人卧下
+	***********************************/
+	else if (str1 == str24)
+	{
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 1;
+		basic_deep_srv_.request.b = 0;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		// OTHER = (char *)"/feedback_voice/search_voice.wav";
+		// WHOLE = join((head + audio_path), OTHER);
+		// system(WHOLE);
+		cout << "好的：机器人卧下" << endl;
+	}
+
+	/***********************************
+	指令：机器人进入力矩模式
+	动作：机器人进入力矩模式
+	***********************************/
+	else if (str1 == str25)
+	{
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 2;
+		basic_deep_srv_.request.b = 0;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		// OTHER = (char *)"/feedback_voice/search_voice.wav";
+		// WHOLE = join((head + audio_path), OTHER);
+		// system(WHOLE);
+		cout << "好的：机器人进入力矩模式" << endl;
+	}
+
+	/***********************************
+	指令：机器人开始运动
+	动作：机器人开始运动
+	***********************************/
+	else if (str1 == str26)
+	{
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 3;
+		basic_deep_srv_.request.b = 1;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		// OTHER = (char *)"/feedback_voice/search_voice.wav";
+		// WHOLE = join((head + audio_path), OTHER);
+		// system(WHOLE);
+		cout << "好的：机器人开始运动" << endl;
+	}
+
+	/***********************************
+	指令：机器人进入导航模式
+	动作：机器人进入导航模式
+	***********************************/
+	else if (str1 == str27)
+	{
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 23;
+		basic_deep_srv_.request.b = 1;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		// OTHER = (char *)"/feedback_voice/search_voice.wav";
+		// WHOLE = join((head + audio_path), OTHER);
+		// system(WHOLE);
+		cout << "好的：机器人进入导航模式" << endl;
+	}
+
+	/***********************************
+	指令：机器人进入手动模式
+	动作：机器人进入手动模式
+	***********************************/
+	else if (str1 == str28)
+	{
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 24;
+		basic_deep_srv_.request.b = 1;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		// OTHER = (char *)"/feedback_voice/search_voice.wav";
+		// WHOLE = join((head + audio_path), OTHER);
+		// system(WHOLE);
+		cout << "好的：机器人进入手动模式" << endl;
+	}
 }
 
 /**************************************************************************
@@ -470,6 +621,9 @@ int main(int argc, char **argv)
 	/***创建寻找语音开启标志位话题订阅者***/
 	ros::Subscriber voice_flag_sub = n.subscribe("voice_flag", 1, voice_flag_Callback);
 
+	ros::ServiceClient basic_command_client_;
+	basic_command_client_ = n.serviceClient<pipeline::deep_srv>("basic_command");
+
 	n.param("/command_recognition/audio_path", audio_path, std::string("~/voice_ws/src/qtt_ws-main/feedback_voice"));
 
 	n.param<float>("/I_position_x", I_position_x, 0.5);
@@ -526,6 +680,12 @@ int main(int argc, char **argv)
 	cout << "关闭自主建图———————————>关闭打开自主建图" << endl;
 	cout << "开始导航———————————>机器人开始导航" << endl;
 	cout << "关闭导航———————————>机器人关闭导航" << endl;
+	cout << "机器人站立———————————>机器人站立" << endl;
+	cout << "机器人卧下———————————>机器人卧下" << endl;
+	cout << "力矩模式———————————>机器人进入力矩模式" << endl;
+	cout << "开始运动———————————>机器人开始运动" << endl;
+	cout << "导航模式———————————>机器人进入导航模式" << endl;
+	cout << "手动模式———————————>机器人进入手动模式" << endl;
 	cout << "\n"
 		 << endl;
 	// printf("-----turn_line_vel_x =%f\n",turn_line_vel_x);
