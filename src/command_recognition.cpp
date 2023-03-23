@@ -85,13 +85,13 @@ void voice_words_callback(const std_msgs::String &msg)
 	{
 		cmd_msg.linear.x = line_vel_x;
 		cmd_msg.angular.z = 0;
-for(int kk=0;kk<50;kk++)
-{
-vel_pub.publish(cmd_msg);
-usleep(50000);
-}
+		for (int kk = 0; kk < 50; kk++)
+		{
+			vel_pub.publish(cmd_msg);
+			usleep(50000);
+		}
 
-		//vel_pub.publish(cmd_msg);
+		// vel_pub.publish(cmd_msg);
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -109,12 +109,12 @@ usleep(50000);
 	{
 		cmd_msg.linear.x = -line_vel_x;
 		cmd_msg.angular.z = 0;
-		//vel_pub.publish(cmd_msg);
-for(int kk=0;kk<50;kk++)
-{
-vel_pub.publish(cmd_msg);
-usleep(50000);
-}
+		// vel_pub.publish(cmd_msg);
+		for (int kk = 0; kk < 50; kk++)
+		{
+			vel_pub.publish(cmd_msg);
+			usleep(50000);
+		}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -132,12 +132,12 @@ usleep(50000);
 	{
 		cmd_msg.linear.x = turn_line_vel_x;
 		cmd_msg.angular.z = ang_vel_z;
-		//vel_pub.publish(cmd_msg);
-for(int kk=0;kk<50;kk++)
-{
-vel_pub.publish(cmd_msg);
-usleep(50000);
-}
+		// vel_pub.publish(cmd_msg);
+		for (int kk = 0; kk < 50; kk++)
+		{
+			vel_pub.publish(cmd_msg);
+			usleep(50000);
+		}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -155,12 +155,12 @@ usleep(50000);
 	{
 		cmd_msg.linear.x = turn_line_vel_x;
 		cmd_msg.angular.z = -ang_vel_z;
-		//vel_pub.publish(cmd_msg);
-for(int kk=0;kk<50;kk++)
-{
-vel_pub.publish(cmd_msg);
-usleep(50000);
-}
+		// vel_pub.publish(cmd_msg);
+		for (int kk = 0; kk < 50; kk++)
+		{
+			vel_pub.publish(cmd_msg);
+			usleep(50000);
+		}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -178,12 +178,12 @@ usleep(50000);
 	{
 		cmd_msg.linear.x = 0;
 		cmd_msg.angular.z = 0;
-		//vel_pub.publish(cmd_msg);
-for(int kk=0;kk<50;kk++)
-{
-vel_pub.publish(cmd_msg);
-usleep(50000);
-}
+		// vel_pub.publish(cmd_msg);
+		for (int kk = 0; kk < 50; kk++)
+		{
+			vel_pub.publish(cmd_msg);
+			usleep(50000);
+		}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -453,8 +453,8 @@ int main(int argc, char **argv)
 
 	/***创建底盘运动话题发布者***/
 	// vel_pub = n.advertise<geometry_msgs::Twist>("ori_vel", 1); // useful
-	//vel_pub = n.advertise<geometry_msgs::Twist>("use_vel_world", 1); // useful
-vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+	// vel_pub = n.advertise<geometry_msgs::Twist>("use_vel_world", 1); // useful
+	vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
 
 	cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel2", 1);
 
