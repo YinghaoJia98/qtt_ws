@@ -85,6 +85,11 @@ void voice_words_callback(const std_msgs::String &msg)
 		cmd_msg.linear.x = line_vel_x;
 		cmd_msg.angular.z = 0;
 		vel_pub.publish(cmd_msg);
+		for (int kk = 0; kk < 10; kk++)
+		{
+			vel_pub.publish(cmd_msg);
+			usleep(100000);
+		}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
