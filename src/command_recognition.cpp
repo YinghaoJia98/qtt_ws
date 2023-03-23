@@ -11,6 +11,7 @@
 #include <std_msgs/Int8.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 using namespace std;
 ros::Publisher vel_pub; // 创建底盘运动话题发布者
@@ -84,12 +85,13 @@ void voice_words_callback(const std_msgs::String &msg)
 	{
 		cmd_msg.linear.x = line_vel_x;
 		cmd_msg.angular.z = 0;
-		vel_pub.publish(cmd_msg);
-		for (int kk = 0; kk < 10; kk++)
-		{
-			vel_pub.publish(cmd_msg);
-			usleep(100000);
-		}
+for(int kk=0;kk<50;kk++)
+{
+vel_pub.publish(cmd_msg);
+usleep(50000);
+}
+
+		//vel_pub.publish(cmd_msg);
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -107,7 +109,12 @@ void voice_words_callback(const std_msgs::String &msg)
 	{
 		cmd_msg.linear.x = -line_vel_x;
 		cmd_msg.angular.z = 0;
-		vel_pub.publish(cmd_msg);
+		//vel_pub.publish(cmd_msg);
+for(int kk=0;kk<50;kk++)
+{
+vel_pub.publish(cmd_msg);
+usleep(50000);
+}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -125,7 +132,12 @@ void voice_words_callback(const std_msgs::String &msg)
 	{
 		cmd_msg.linear.x = turn_line_vel_x;
 		cmd_msg.angular.z = ang_vel_z;
-		vel_pub.publish(cmd_msg);
+		//vel_pub.publish(cmd_msg);
+for(int kk=0;kk<50;kk++)
+{
+vel_pub.publish(cmd_msg);
+usleep(50000);
+}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -143,7 +155,12 @@ void voice_words_callback(const std_msgs::String &msg)
 	{
 		cmd_msg.linear.x = turn_line_vel_x;
 		cmd_msg.angular.z = -ang_vel_z;
-		vel_pub.publish(cmd_msg);
+		//vel_pub.publish(cmd_msg);
+for(int kk=0;kk<50;kk++)
+{
+vel_pub.publish(cmd_msg);
+usleep(50000);
+}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -161,7 +178,12 @@ void voice_words_callback(const std_msgs::String &msg)
 	{
 		cmd_msg.linear.x = 0;
 		cmd_msg.angular.z = 0;
-		vel_pub.publish(cmd_msg);
+		//vel_pub.publish(cmd_msg);
+for(int kk=0;kk<50;kk++)
+{
+vel_pub.publish(cmd_msg);
+usleep(50000);
+}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -431,9 +453,10 @@ int main(int argc, char **argv)
 
 	/***创建底盘运动话题发布者***/
 	// vel_pub = n.advertise<geometry_msgs::Twist>("ori_vel", 1); // useful
-	vel_pub = n.advertise<geometry_msgs::Twist>("use_vel_world", 1); // useful
+	//vel_pub = n.advertise<geometry_msgs::Twist>("use_vel_world", 1); // useful
+vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
 
-	cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+	cmd_vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel2", 1);
 
 	/***创建唤醒标志位话题发布者***/
 	awake_flag_pub = n.advertise<std_msgs::Int8>("awake_flag", 1);
@@ -447,22 +470,22 @@ int main(int argc, char **argv)
 	/***创建寻找语音开启标志位话题订阅者***/
 	ros::Subscriber voice_flag_sub = n.subscribe("voice_flag", 1, voice_flag_Callback);
 
-	n.param("/command_recognition/audio_path", audio_path, std::string("~/catkin_ws1111/src/xf_mic_asr_offline/feedback_voice"));
+	n.param("/command_recognition/audio_path", audio_path, std::string("~/voice_ws/src/qtt_ws-main/feedback_voice"));
 
-	n.param<float>("/I_position_x", I_position_x, 1);
+	n.param<float>("/I_position_x", I_position_x, 0.5);
 	n.param<float>("/I_position_y", I_position_y, 0);
 	n.param<float>("/I_orientation_z", I_orientation_z, 0);
 	n.param<float>("/I_orientation_w", I_orientation_w, 1);
-	n.param<float>("/J_position_x", J_position_x, 2);
+	n.param<float>("/J_position_x", J_position_x, 1.0);
 	n.param<float>("/J_position_y", J_position_y, 0);
 	n.param<float>("/J_orientation_z", J_orientation_z, 0);
 	n.param<float>("/J_orientation_w", J_orientation_w, 1);
-	n.param<float>("/K_position_x", K_position_x, 3);
+	n.param<float>("/K_position_x", K_position_x, 1.5);
 	n.param<float>("/K_position_y", K_position_y, 0);
 	n.param<float>("/K_orientation_z", K_orientation_z, 0);
 	n.param<float>("/K_orientation_w", K_orientation_w, 1);
-	n.param<float>("/line_vel_x", line_vel_x, 0.2);
-	n.param<float>("/ang_vel_z", ang_vel_z, 0.2);
+	n.param<float>("/line_vel_x", line_vel_x, 0.35);
+	n.param<float>("/ang_vel_z", ang_vel_z, 0.3);
 	n.param("/if_akm_yes_or_no", if_akm, std::string("no"));
 
 	if (if_akm == "yes")
