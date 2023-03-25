@@ -22,8 +22,16 @@ ros::Publisher follow_flag_pub;		// 创建寻找声源标志位话题发布者
 ros::Publisher cmd_vel_flag_pub;	// 创建底盘运动控制器标志位话题发布者
 ros::Publisher awake_flag_pub;		// 创建唤醒标志位话题发布者
 ros::Publisher navigation_auto_pub; // 创建自主导航目标点话题发布者
+ros::ServiceClient basic_command_client_;//=n.serviceClient<pipeline::deep_srv>("basic_command");
+
+
+
+
 geometry_msgs::Twist cmd_msg;		// 底盘运动话题消息数据
 geometry_msgs::PoseStamped target;	// 导航目标点消息数据
+
+
+
 int voice_flag = 0;					// 寻找标志位
 int voice_open_off = 0;
 int goal_control = 0;
@@ -79,10 +87,10 @@ void voice_words_callback(const std_msgs::String &msg)
 	string str22 = "开始导航";
 	string str23 = "机器人站立";
 	string str24 = "机器人卧下";
-	string str25 = "力矩模式";
+	string str25 = "机器人力矩";
 	string str26 = "开始运动";
-	string str27 = "导航模式";
-	string str28 = "手动模式";
+	string str27 = "机器人导航";
+	string str28 = "机器人手动";
 
 	/***********************************
 	指令：机器人前进
@@ -621,7 +629,7 @@ int main(int argc, char **argv)
 	/***创建寻找语音开启标志位话题订阅者***/
 	ros::Subscriber voice_flag_sub = n.subscribe("voice_flag", 1, voice_flag_Callback);
 
-	ros::ServiceClient basic_command_client_;
+	//ros::ServiceClient basic_command_client_;
 	basic_command_client_ = n.serviceClient<pipeline::deep_srv>("basic_command");
 
 	n.param("/command_recognition/audio_path", audio_path, std::string("~/voice_ws/src/qtt_ws-main/feedback_voice"));
@@ -682,10 +690,10 @@ int main(int argc, char **argv)
 	cout << "关闭导航———————————>机器人关闭导航" << endl;
 	cout << "机器人站立———————————>机器人站立" << endl;
 	cout << "机器人卧下———————————>机器人卧下" << endl;
-	cout << "力矩模式———————————>机器人进入力矩模式" << endl;
+	cout << "机器人力矩———————————>机器人进入力矩模式" << endl;
 	cout << "开始运动———————————>机器人开始运动" << endl;
-	cout << "导航模式———————————>机器人进入导航模式" << endl;
-	cout << "手动模式———————————>机器人进入手动模式" << endl;
+	cout << "机器人导航———————————>机器人进入导航模式" << endl;
+	cout << "机器人手动———————————>机器人进入手动模式" << endl;
 	cout << "\n"
 		 << endl;
 	// printf("-----turn_line_vel_x =%f\n",turn_line_vel_x);
