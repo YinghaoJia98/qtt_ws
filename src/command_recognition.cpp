@@ -18,21 +18,16 @@ using namespace std;
 ros::Publisher vel_pub; // 创建底盘运动话题发布者
 ros::Publisher cmd_vel_pub;
 ros::Publisher goal_control_pub;
-ros::Publisher follow_flag_pub;		// 创建寻找声源标志位话题发布者
-ros::Publisher cmd_vel_flag_pub;	// 创建底盘运动控制器标志位话题发布者
-ros::Publisher awake_flag_pub;		// 创建唤醒标志位话题发布者
-ros::Publisher navigation_auto_pub; // 创建自主导航目标点话题发布者
-ros::ServiceClient basic_command_client_;//=n.serviceClient<pipeline::deep_srv>("basic_command");
+ros::Publisher follow_flag_pub;			  // 创建寻找声源标志位话题发布者
+ros::Publisher cmd_vel_flag_pub;		  // 创建底盘运动控制器标志位话题发布者
+ros::Publisher awake_flag_pub;			  // 创建唤醒标志位话题发布者
+ros::Publisher navigation_auto_pub;		  // 创建自主导航目标点话题发布者
+ros::ServiceClient basic_command_client_; //=n.serviceClient<pipeline::deep_srv>("basic_command");
 
+geometry_msgs::Twist cmd_msg;	   // 底盘运动话题消息数据
+geometry_msgs::PoseStamped target; // 导航目标点消息数据
 
-
-
-geometry_msgs::Twist cmd_msg;		// 底盘运动话题消息数据
-geometry_msgs::PoseStamped target;	// 导航目标点消息数据
-
-
-
-int voice_flag = 0;					// 寻找标志位
+int voice_flag = 0; // 寻找标志位
 int voice_open_off = 0;
 int goal_control = 0;
 
@@ -54,6 +49,54 @@ float K_orientation_w;
 float line_vel_x;
 float ang_vel_z;
 float turn_line_vel_x;
+
+void pub_robot_start_command_by_service()
+{
+	pipeline::deep_srv basic_deep_srv_;
+	basic_deep_srv_.request.a = 3;
+	basic_deep_srv_.request.b = 1;
+	basic_deep_srv_.request.x = 0.0;
+	basic_deep_srv_.request.y = 0.0;
+	basic_deep_srv_.request.yaw = 0.0;
+
+	if (!basic_command_client_.call(basic_deep_srv_))
+	{
+		ROS_ERROR("[Voice] Service call failed: %s",
+				  basic_command_client_.getService().c_str());
+	}
+}
+
+void pub_robot_stop_command_by_service()
+{
+	pipeline::deep_srv basic_deep_srv_;
+	basic_deep_srv_.request.a = 3;
+	basic_deep_srv_.request.b = 0;
+	basic_deep_srv_.request.x = 0.0;
+	basic_deep_srv_.request.y = 0.0;
+	basic_deep_srv_.request.yaw = 0.0;
+
+	if (!basic_command_client_.call(basic_deep_srv_))
+	{
+		ROS_ERROR("[Voice] Service call failed: %s",
+				  basic_command_client_.getService().c_str());
+	}
+}
+
+void set_navigation_mode()
+{
+	pipeline::deep_srv basic_deep_srv_;
+	basic_deep_srv_.request.a = 23;
+	basic_deep_srv_.request.b = 1;
+	basic_deep_srv_.request.x = 0.0;
+	basic_deep_srv_.request.y = 0.0;
+	basic_deep_srv_.request.yaw = 0.0;
+
+	if (!basic_command_client_.call(basic_deep_srv_))
+	{
+		ROS_ERROR("[Voice] Service call failed: %s",
+				  basic_command_client_.getService().c_str());
+	}
+}
 
 /**************************************************************************
 函数功能：离线命令词识别结果sub回调函数
@@ -91,6 +134,7 @@ void voice_words_callback(const std_msgs::String &msg)
 	string str26 = "开始运动";
 	string str27 = "机器人导航";
 	string str28 = "机器人手动";
+	string str29 = "停止运动";
 
 	/***********************************
 	指令：机器人前进
@@ -98,6 +142,7 @@ void voice_words_callback(const std_msgs::String &msg)
 	***********************************/
 	if (str1 == str2)
 	{
+		pub_robot_start_command_by_service();
 		cmd_msg.linear.x = line_vel_x;
 		cmd_msg.angular.z = 0;
 		for (int kk = 0; kk < 50; kk++)
@@ -115,6 +160,7 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人前进" << endl;
+		pub_robot_stop_command_by_service();
 	}
 	/***********************************
 	指令：机器人后退
@@ -122,6 +168,7 @@ void voice_words_callback(const std_msgs::String &msg)
 	***********************************/
 	else if (str1 == str3)
 	{
+		pub_robot_start_command_by_service();
 		cmd_msg.linear.x = -line_vel_x;
 		cmd_msg.angular.z = 0;
 		// vel_pub.publish(cmd_msg);
@@ -138,6 +185,7 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人后退" << endl;
+		pub_robot_stop_command_by_service();
 	}
 	/***********************************
 	指令：机器人左转
@@ -145,6 +193,7 @@ void voice_words_callback(const std_msgs::String &msg)
 	***********************************/
 	else if (str1 == str4)
 	{
+		pub_robot_start_command_by_service();
 		cmd_msg.linear.x = turn_line_vel_x;
 		cmd_msg.angular.z = ang_vel_z;
 		// vel_pub.publish(cmd_msg);
@@ -161,6 +210,7 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人左转" << endl;
+		pub_robot_stop_command_by_service();
 	}
 	/***********************************
 	指令：机器人右转
@@ -168,6 +218,7 @@ void voice_words_callback(const std_msgs::String &msg)
 	***********************************/
 	else if (str1 == str5)
 	{
+		pub_robot_start_command_by_service();
 		cmd_msg.linear.x = turn_line_vel_x;
 		cmd_msg.angular.z = -ang_vel_z;
 		// vel_pub.publish(cmd_msg);
@@ -184,6 +235,7 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人右转" << endl;
+		pub_robot_stop_command_by_service();
 	}
 	/***********************************
 	指令：机器人停
@@ -250,6 +302,7 @@ void voice_words_callback(const std_msgs::String &msg)
 	***********************************/
 	else if (str1 == str9)
 	{
+		pub_robot_start_command_by_service();
 		target.pose.position.x = I_position_x;
 		target.pose.position.y = I_position_y;
 		target.pose.orientation.z = I_orientation_z;
@@ -267,13 +320,15 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人自主导航至I点" << endl;
+		pub_robot_stop_command_by_service();
 	}
 	/***********************************
-	指令：机器人去I点
+	指令：机器人去J点
 	动作：底盘运动控制器失能(导航控制)，发布目标点
 	***********************************/
 	else if (str1 == str10)
 	{
+		pub_robot_start_command_by_service();
 		target.pose.position.x = J_position_x;
 		target.pose.position.y = J_position_y;
 		target.pose.orientation.z = J_orientation_z;
@@ -291,6 +346,7 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人自主导航至J点" << endl;
+		pub_robot_stop_command_by_service();
 	}
 	/***********************************
 	指令：机器人去K点
@@ -298,6 +354,7 @@ void voice_words_callback(const std_msgs::String &msg)
 	***********************************/
 	else if (str1 == str11)
 	{
+		pub_robot_start_command_by_service();
 		target.pose.position.x = K_position_x;
 		target.pose.position.y = K_position_y;
 		target.pose.orientation.z = K_orientation_z;
@@ -315,6 +372,7 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人自主导航至K点" << endl;
+		pub_robot_stop_command_by_service();
 	}
 	/***********************************
 	辅助指令：失败5次
@@ -549,6 +607,30 @@ void voice_words_callback(const std_msgs::String &msg)
 		// system(WHOLE);
 		cout << "好的：机器人进入手动模式" << endl;
 	}
+
+	/***********************************
+	指令：机器人停止运动
+	动作：机器人停止运动
+	***********************************/
+	else if (str1 == str29)
+	{
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 3;
+		basic_deep_srv_.request.b = 0;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		// OTHER = (char *)"/feedback_voice/search_voice.wav";
+		// WHOLE = join((head + audio_path), OTHER);
+		// system(WHOLE);
+		cout << "好的：机器人停止运动" << endl;
+	}
 }
 
 /**************************************************************************
@@ -629,7 +711,7 @@ int main(int argc, char **argv)
 	/***创建寻找语音开启标志位话题订阅者***/
 	ros::Subscriber voice_flag_sub = n.subscribe("voice_flag", 1, voice_flag_Callback);
 
-	//ros::ServiceClient basic_command_client_;
+	// ros::ServiceClient basic_command_client_;
 	basic_command_client_ = n.serviceClient<pipeline::deep_srv>("basic_command");
 
 	n.param("/command_recognition/audio_path", audio_path, std::string("~/voice_ws/src/qtt_ws-main/feedback_voice"));
@@ -692,6 +774,7 @@ int main(int argc, char **argv)
 	cout << "机器人卧下———————————>机器人卧下" << endl;
 	cout << "机器人力矩———————————>机器人进入力矩模式" << endl;
 	cout << "开始运动———————————>机器人开始运动" << endl;
+	cout << "停止运动———————————>机器人停止运动" << endl;
 	cout << "机器人导航———————————>机器人进入导航模式" << endl;
 	cout << "机器人手动———————————>机器人进入手动模式" << endl;
 	cout << "\n"
