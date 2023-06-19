@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pipeline/deep_srv.h>
+#include <std_srvs/Trigger.h>
 
 using namespace std;
 ros::Publisher vel_pub; // 创建底盘运动话题发布者
@@ -26,6 +27,9 @@ ros::ServiceClient basic_command_client_; //=n.serviceClient<pipeline::deep_srv>
 
 geometry_msgs::Twist cmd_msg;	   // 底盘运动话题消息数据
 geometry_msgs::PoseStamped target; // 导航目标点消息数据
+
+ros::ServiceClient go_forward_client_;
+ros::ServiceClient stop_forward_client_;
 
 int voice_flag = 0; // 寻找标志位
 int voice_open_off = 0;
@@ -143,15 +147,26 @@ void voice_words_callback(const std_msgs::String &msg)
 	if (str1 == str2)
 	{
 		pub_robot_start_command_by_service();
-		cmd_msg.linear.x = line_vel_x;
-		cmd_msg.angular.z = 0;
-		for (int kk = 0; kk < 50; kk++)
-		{
-			vel_pub.publish(cmd_msg);
-			usleep(50000);
-		}
+		// cmd_msg.linear.x = line_vel_x;
+		// cmd_msg.angular.z = 0;
+		// for (int kk = 0; kk < 50; kk++)
+		// {
+		// 	vel_pub.publish(cmd_msg);
+		// 	usleep(50000);
+		// }
 
 		// vel_pub.publish(cmd_msg);
+		std_srvs::Trigger srv;
+		if (!go_forward_client_.call(srv))
+		{
+			ROS_ERROR(" Service call failed: %s",
+					  go_forward_client_.getService().c_str());
+		}
+		else
+		{
+			ROS_INFO(" Service call succeed: %s",
+					 go_forward_client_.getService().c_str());
+		}
 
 		std_msgs::Int8 cmd_vel_flag_msg;
 		cmd_vel_flag_msg.data = 1;
@@ -160,7 +175,7 @@ void voice_words_callback(const std_msgs::String &msg)
 		WHOLE = join((head + audio_path), OTHER);
 		system(WHOLE);
 		cout << "好的：机器人前进" << endl;
-		pub_robot_stop_command_by_service();
+		// pub_robot_stop_command_by_service();
 	}
 	/***********************************
 	指令：机器人后退
@@ -626,6 +641,18 @@ void voice_words_callback(const std_msgs::String &msg)
 			ROS_ERROR("[Voice] Service call failed: %s",
 					  basic_command_client_.getService().c_str());
 		}
+
+		std_srvs::Trigger srv;
+		if (!go_forward_client_.call(srv))
+		{
+			ROS_ERROR(" Service call failed: %s",
+					  go_forward_client_.getService().c_str());
+		}
+		else
+		{
+			ROS_INFO(" Service call succeed: %s",
+					 go_forward_client_.getService().c_str());
+		}
 		// OTHER = (char *)"/feedback_voice/search_voice.wav";
 		// WHOLE = join((head + audio_path), OTHER);
 		// system(WHOLE);
@@ -713,6 +740,9 @@ int main(int argc, char **argv)
 
 	// ros::ServiceClient basic_command_client_;
 	basic_command_client_ = n.serviceClient<pipeline::deep_srv>("basic_command");
+
+	go_forward_client_ = n.serviceClient<std_srvs::Trigger>("NavManager_Start");
+	stop_forward_client_ = n.serviceClient<std_srvs::Trigger>("NavManager_Stop");
 
 	n.param("/command_recognition/audio_path", audio_path, std::string("~/voice_ws/src/qtt_ws-main/feedback_voice"));
 
