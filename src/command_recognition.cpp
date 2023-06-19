@@ -635,6 +635,17 @@ void voice_words_callback(const std_msgs::String &msg)
 		basic_deep_srv_.request.x = 0.0;
 		basic_deep_srv_.request.y = 0.0;
 		basic_deep_srv_.request.yaw = 0.0;
+		std_srvs::Trigger srv;
+		if (!stop_forward_client_.call(srv))
+		{
+			ROS_ERROR(" Service call failed: %s",
+					  stop_forward_client_.getService().c_str());
+		}
+		else
+		{
+			ROS_INFO(" Service call succeed: %s",
+					 stop_forward_client_.getService().c_str());
+		}
 
 		if (!basic_command_client_.call(basic_deep_srv_))
 		{
@@ -642,17 +653,7 @@ void voice_words_callback(const std_msgs::String &msg)
 					  basic_command_client_.getService().c_str());
 		}
 
-		std_srvs::Trigger srv;
-		if (!go_forward_client_.call(srv))
-		{
-			ROS_ERROR(" Service call failed: %s",
-					  go_forward_client_.getService().c_str());
-		}
-		else
-		{
-			ROS_INFO(" Service call succeed: %s",
-					 go_forward_client_.getService().c_str());
-		}
+		
 		// OTHER = (char *)"/feedback_voice/search_voice.wav";
 		// WHOLE = join((head + audio_path), OTHER);
 		// system(WHOLE);
