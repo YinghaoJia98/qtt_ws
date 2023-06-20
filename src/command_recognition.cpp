@@ -653,7 +653,6 @@ void voice_words_callback(const std_msgs::String &msg)
 					  basic_command_client_.getService().c_str());
 		}
 
-		
 		// OTHER = (char *)"/feedback_voice/search_voice.wav";
 		// WHOLE = join((head + audio_path), OTHER);
 		// system(WHOLE);
