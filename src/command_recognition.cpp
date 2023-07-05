@@ -146,6 +146,21 @@ void voice_words_callback(const std_msgs::String &msg)
 	***********************************/
 	if (str1 == str2)
 	{
+		// navigation mode
+		pipeline::deep_srv basic_deep_srv_;
+		basic_deep_srv_.request.a = 23;
+		basic_deep_srv_.request.b = 1;
+		basic_deep_srv_.request.x = 0.0;
+		basic_deep_srv_.request.y = 0.0;
+		basic_deep_srv_.request.yaw = 0.0;
+
+		if (!basic_command_client_.call(basic_deep_srv_))
+		{
+			ROS_ERROR("[Voice] Service call failed: %s",
+					  basic_command_client_.getService().c_str());
+		}
+		//
+
 		pub_robot_start_command_by_service();
 		// cmd_msg.linear.x = line_vel_x;
 		// cmd_msg.angular.z = 0;
